@@ -1040,3 +1040,93 @@ int main()
     }while(c=='y');
 	return 0;
 }
+
+/*
+Q6) Construct an expression tree from the given prefix expression eg. +--a*bc/def and
+traverse it using post order traversal (non recursive) and then delete the entire tree.
+*/
+#include<iostream>
+#include<string>
+using namespace std;
+
+typedef struct node
+{
+	char data;
+	struct node *left, *right;	
+}node;
+
+class stack
+{
+	public:
+		int top;
+		node *pile[30];
+		
+		stack()
+		{
+			top=-1;
+		}
+		
+		void push(node *T)
+		{
+			pile[++top]=T;
+		}
+		
+		node* topn()
+		{
+			return(pile[top]);
+		}
+		
+		node* pop()
+		{
+			return(pile[top--]);
+		}
+};
+
+node* prefix_to_tree(string prefix)
+{
+	stack o;
+	for(int i=prefix.length()-1;i>=0;i--)
+	{
+		if(isalnum(prefix[i]))
+		{
+			node* P=new node;
+			P->data=prefix[i];
+			P->left=NULL;
+			P->right=NULL;
+			o.push(P);	
+		}
+		else if(prefix[i]=='+'|| prefix[i]=='*'||prefix[i]=='/' ||prefix[i]=='-' || prefix[i]=='^')
+		{
+			node* L=o.pop();
+			node* R=o.pop();
+			node* P=new node;
+			P->data=prefix[i];
+			P->left=L;
+			P->right=R;
+			o.push(P);
+		}
+	}
+	return (o.topn());
+}
+
+void Inorder(node *T)
+{
+	if(T!=NULL)
+	{
+		Inorder(T->left);
+		cout<<T->data<<"\t";
+		Inorder(T->right);
+	}
+}
+
+int main()
+{
+	string prefix;
+	cout<<"Enter a prefix string: ";
+	cin>>prefix;
+	cout<<endl;
+	node* root=prefix_to_tree(prefix);
+	cout<<endl<<"post order traversal: ";
+	Inorder(root);
+	return 0;
+}
